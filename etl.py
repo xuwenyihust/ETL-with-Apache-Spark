@@ -1,24 +1,27 @@
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext, HiveContext
 
-# Define Spark configuration
-conf = SparkConf()
-conf.setMaster("local[4]")
-conf.setAppName("MySQL_import")
-#conf.set("spark.executor.memoryg")
+def main(sc):
+	# Initialize sparksql context
+	sql_ctx = SQLContext(sc)
+	# Initialize hive context
+	hive_ctx = HiveContext(sc)
 
-# Initialize a SparkContext and SQLContext
-sc = SparkContext(conf=conf)
-sql_ctx = SQLContext(sc)
+	hive_ctx.sql("CREATE TABLE IF NOT EXISTS test ( \
+					id int, \
+					num int) \
+				")
+	results = hive_ctx.sql("DESCRIBE test").collect()
+	print(results)
+	print('>'*80)
 
-# Initialize hive context
-hive_ctx = HiveContext(sc)
+if __name__=="__main__":
+	# Define Spark configuration
+	conf = SparkConf()
+	conf.setMaster("local[4]")
+	conf.setAppName("MySQL_import")
+	# Initialize a SparkContext and SQLContext
+	sc = SparkContext(conf=conf)
+	# Execute main function
+	main(sc)
 
-hive_ctx.sql("CREATE TABLE IF NOT EXISTS test ( \
-				id int, \
-				num int) \
-			")
-results = hive_ctx.sql("DESCRIBE test").collect()
-print(results)
-
-print('>'*80)
