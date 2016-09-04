@@ -73,6 +73,32 @@ def main(sc, file1, file2):
 				GROUP BY title, gender \
 				ORDER BY numberOf5Ratings DESC LIMIT 5").collect()
 
+	num_5ratings_mf = hive_ctx.sql( \
+				"SELECT * FROM \
+				(SELECT gender, title, COUNT(*) AS numberOf5Ratings \
+				FROM UserMovieRatings \
+				JOIN UserDetails \
+				ON UserMovieRatings.userId = UserDetails.userId \
+				JOIN MovieDetails \
+				ON UserMovieRatings.movieId = MovieDetails.movieId \
+				WHERE rating = 5 \
+				AND gender = 'M' \
+				GROUP BY title, gender \
+				ORDER BY numberOf5Ratings DESC LIMIT 5) AS m \
+				UNION \
+				SELECT * FROM \
+				(SELECT gender, title, COUNT(*) AS numberOf5Ratings \
+				FROM UserMovieRatings \
+				JOIN UserDetails \
+				ON UserMovieRatings.userId = UserDetails.userId \
+				JOIN MovieDetails \
+				ON UserMovieRatings.movieId = MovieDetails.movieId \
+				WHERE rating = 5 \
+				AND gender = 'F' \
+				GROUP BY title, gender \
+				ORDER BY numberOf5Ratings DESC LIMIT 5) AS f\
+				ORDER BY gender DESC").collect()
+
 	print('>'*80)
 	print('>>> Input file1:')
 	print(file1)
@@ -93,6 +119,9 @@ def main(sc, file1, file2):
 		print(x)
 	print('>>> Number of 5 ratings for female:')
 	for x in num_5ratings_f:
+		print(x)
+	print('>>> Number of 5 ratings for male&female:')
+	for x in num_5ratings_mf:
 		print(x)
 	print('>'*80)
 
