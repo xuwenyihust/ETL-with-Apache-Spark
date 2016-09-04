@@ -36,7 +36,8 @@ def main(sc, file1, file2):
 	hive_ctx.sql(	"CREATE EXTERNAL TABLE IF NOT EXISTS MovieDetails ( \
 						movieId int, \
 						title string, \
-						time string) \
+						time string, \
+						website string) \
 					ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' \
 					STORED AS TEXTFILE \
 					LOCATION "+file3
@@ -44,7 +45,7 @@ def main(sc, file1, file2):
 	table3_head = hive_ctx.sql("SELECT * FROM MovieDetails LIMIT 5").collect()
 	############################################################################
     # Transform The Data Using Hive
-	num_5ratings = hive_ctx.sql("SELECT title, COUNT(*) AS numberOf5Ratings \
+	'''num_5ratings = hive_ctx.sql("SELECT title, COUNT(*) AS numberOf5Ratings \
 					FROM MovieDetails \
 					JOIN UserMovieRatings \
 					ON MovieDetails.movieId = UserMovieRatings.movieId \
@@ -73,7 +74,7 @@ def main(sc, file1, file2):
 				AND gender = 'F' \
 				GROUP BY title, gender \
 				ORDER BY numberOf5Ratings DESC LIMIT 5").collect()
-
+	'''
 	num_5ratings_mf = hive_ctx.sql( \
 				"SELECT * FROM \
 				(SELECT gender, title, COUNT(*) AS numberOf5Ratings \
