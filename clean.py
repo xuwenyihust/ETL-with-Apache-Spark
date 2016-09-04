@@ -20,7 +20,7 @@ genre_li = ['unknown', \
 			'War', \
 			'Western']
 
-raw = open("./data/movie_details/movie-details.txt", "r")
+raw = open("./data/movie_details/movie-details.txt", "r", encoding = "ISO-8859-1")
 clean = open("./data/movie_details_clean/movie-details.txt", 'w')
 
 for line in raw:
@@ -30,7 +30,20 @@ for line in raw:
 	movieName = line[1]
 	genre = line[5:]
 
+	cleaned_str += str(movieId)
+	cleaned_str += '#'
+	cleaned_str += str(movieName)
+	cleaned_str += '#'
+	
+	for i in range(len(genre)):
+		if genre[i] == '1':
+			cleaned_str += genre_li[i]
+			cleaned_str += '|'
+	cleaned_str = cleaned_str.rstrip('|')
+	cleaned_str += '\n'
+	#print(cleaned_str)
+	clean.write(cleaned_str)
 
-
-
+raw.close()
+clean.close()
 

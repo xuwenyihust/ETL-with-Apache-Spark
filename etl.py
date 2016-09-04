@@ -114,14 +114,14 @@ def main(sc, file1, file2):
 	for x in table3_head:
 		print(x)
 	print('>>> Number of 5 ratings:')
-	for x in num_5ratings:
+	'''for x in num_5ratings:
 		print(x)
 	print('>>> Number of 5 ratings for male:')
 	for x in num_5ratings_m:
 		print(x)
 	print('>>> Number of 5 ratings for female:')
 	for x in num_5ratings_f:
-		print(x)
+		print(x)'''
 	print('>>> Number of 5 ratings for male&female:')
 	for x in num_5ratings_mf:
 		print(x)
