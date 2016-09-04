@@ -7,6 +7,8 @@ def main(sc, file1, file2):
 	sql_ctx = SQLContext(sc)
 	# Initialize hive context
 	hive_ctx = HiveContext(sc)
+	############################################################################
+	# Create Table Definitions Using Hive 
 	hive_ctx.sql("DROP TABLE IF EXISTS UserMovieRatings")
 	hive_ctx.sql("DROP TABLE IF EXISTS UserDetails")
 	hive_ctx.sql("DROP TABLE IF EXISTS MovieDetails")
@@ -33,14 +35,44 @@ def main(sc, file1, file2):
 	table2_head = hive_ctx.sql("SELECT * FROM UserDetails LIMIT 5").collect()
 	hive_ctx.sql(	"CREATE EXTERNAL TABLE IF NOT EXISTS MovieDetails ( \
 						movieId int, \
-						title string, \
-						genres array<string>) \
+						title string) \
 					ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' \
-					collection items terminated by '|' \
 					STORED AS TEXTFILE \
 					LOCATION "+file3
 				)
 	table3_head = hive_ctx.sql("SELECT * FROM MovieDetails LIMIT 5").collect()
+	############################################################################
+    # Transform The Data Using Hive
+	num_5ratings = hive_ctx.sql("SELECT title, COUNT(*) AS numberOf5Ratings \
+					FROM MovieDetails \
+					JOIN UserMovieRatings \
+					ON MovieDetails.movieId = UserMovieRatings.movieId \
+					WHERE rating = 5 \
+					GROUP BY title \
+					ORDER BY numberOf5Ratings DESC LIMIT 5").collect()
+	num_5ratings_m = hive_ctx.sql( \
+				"SELECT gender, title, COUNT(*) AS numberOf5Ratings \
+				FROM UserMovieRatings \
+				JOIN UserDetails \
+				ON UserMovieRatings.userId = UserDetails.userId \
+				JOIN MovieDetails \
+				ON UserMovieRatings.movieId = MovieDetails.movieId \
+				WHERE rating = 5 \
+				AND gender = 'M' \
+				GROUP BY title, gender \
+				ORDER BY numberOf5Ratings DESC LIMIT 5").collect()
+	num_5ratings_f = hive_ctx.sql( \
+				"SELECT gender, title, COUNT(*) AS numberOf5Ratings \
+				FROM UserMovieRatings \
+				JOIN UserDetails \
+				ON UserMovieRatings.userId = UserDetails.userId \
+				JOIN MovieDetails \
+				ON UserMovieRatings.movieId = MovieDetails.movieId \
+				WHERE rating = 5 \
+				AND gender = 'F' \
+				GROUP BY title, gender \
+				ORDER BY numberOf5Ratings DESC LIMIT 5").collect()
+
 	print('>'*80)
 	print('>>> Input file1:')
 	print(file1)
@@ -52,6 +84,15 @@ def main(sc, file1, file2):
 		print(x)
 	print('>>> Table3 head:')
 	for x in table3_head:
+		print(x)
+	print('>>> Number of 5 ratings:')
+	for x in num_5ratings:
+		print(x)
+	print('>>> Number of 5 ratings for male:')
+	for x in num_5ratings_m:
+		print(x)
+	print('>>> Number of 5 ratings for female:')
+	for x in num_5ratings_f:
 		print(x)
 	print('>'*80)
 
