@@ -35,7 +35,8 @@ def main(sc, file1, file2):
 	table2_head = hive_ctx.sql("SELECT * FROM UserDetails LIMIT 5").collect()
 	hive_ctx.sql(	"CREATE EXTERNAL TABLE IF NOT EXISTS MovieDetails ( \
 						movieId int, \
-						title string) \
+						title string, \
+						time string) \
 					ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' \
 					STORED AS TEXTFILE \
 					LOCATION "+file3
