@@ -36,9 +36,9 @@ def main(sc, file1, file2):
 	hive_ctx.sql(	"CREATE EXTERNAL TABLE IF NOT EXISTS MovieDetails ( \
 						movieId int, \
 						title string, \
-						time string, \
-						website string) \
-					ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' \
+						genres array<string>) \
+					ROW FORMAT DELIMITED FIELDS TERMINATED BY '#' \
+					collection items terminated by '|' \
 					STORED AS TEXTFILE \
 					LOCATION "+file3
 				)
@@ -100,6 +100,13 @@ def main(sc, file1, file2):
 				GROUP BY title, gender \
 				ORDER BY numberOf5Ratings DESC LIMIT 5) AS f\
 				ORDER BY gender DESC").collect()
+	genre_rating = hive_ctx.sql( \
+				"SELECT genre, rating, count(*) ratingCount \
+				FROM UserMovieRatings r \
+				JOIN (SELECT movieId, title, explode(genres) AS genre \
+				FROM movieDetails) m\
+				ON (r.movieId = m.movieId) \
+				GROUP BY genre, rating").collect()
 
 	print('>'*80)
 	print('>>> Input file1:')
@@ -113,8 +120,8 @@ def main(sc, file1, file2):
 	print('>>> Table3 head:')
 	for x in table3_head:
 		print(x)
-	print('>>> Number of 5 ratings:')
-	'''for x in num_5ratings:
+	'''print('>>> Number of 5 ratings:')
+	for x in num_5ratings:
 		print(x)
 	print('>>> Number of 5 ratings for male:')
 	for x in num_5ratings_m:
@@ -124,6 +131,9 @@ def main(sc, file1, file2):
 		print(x)'''
 	print('>>> Number of 5 ratings for male&female:')
 	for x in num_5ratings_mf:
+		print(x)
+	print('>>> Ratings per genre:')
+	for x in genre_rating:
 		print(x)
 	print('>'*80)
 
