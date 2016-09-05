@@ -45,14 +45,14 @@ def main(sc, file1, file2):
 	table3_head = hive_ctx.sql("SELECT * FROM MovieDetails LIMIT 5").collect()
 	############################################################################
     # Transform The Data Using Hive
-	'''num_5ratings = hive_ctx.sql("SELECT title, COUNT(*) AS numberOf5Ratings \
+	num_5ratings = hive_ctx.sql("SELECT title, COUNT(*) AS numberOf5Ratings \
 					FROM MovieDetails \
 					JOIN UserMovieRatings \
 					ON MovieDetails.movieId = UserMovieRatings.movieId \
 					WHERE rating = 5 \
 					GROUP BY title \
 					ORDER BY numberOf5Ratings DESC LIMIT 5").collect()
-	num_5ratings_m = hive_ctx.sql( \
+	'''num_5ratings_m = hive_ctx.sql( \
 				"SELECT gender, title, COUNT(*) AS numberOf5Ratings \
 				FROM UserMovieRatings \
 				JOIN UserDetails \
